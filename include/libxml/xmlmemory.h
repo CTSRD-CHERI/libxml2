@@ -152,7 +152,7 @@ XMLPUBFUN void XMLCALL
 XMLPUBFUN void * XMLCALL
 	xmlMemMalloc	(size_t size) LIBXML_ATTR_ALLOC_SIZE(1);
 XMLPUBFUN void * XMLCALL
-	xmlMemRealloc	(void *ptr,size_t size);
+	xmlMemRealloc	(void *ptr,size_t size) LIBXML_ATTR_ALLOC_SIZE(2);
 XMLPUBFUN void XMLCALL
 	xmlMemFree	(void *ptr);
 XMLPUBFUN char * XMLCALL
@@ -160,7 +160,7 @@ XMLPUBFUN char * XMLCALL
 XMLPUBFUN void * XMLCALL
 	xmlMallocLoc	(size_t size, const char *file, int line) LIBXML_ATTR_ALLOC_SIZE(1);
 XMLPUBFUN void * XMLCALL
-	xmlReallocLoc	(void *ptr, size_t size, const char *file, int line);
+	xmlReallocLoc	(void *ptr, size_t size, const char *file, int line) LIBXML_ATTR_ALLOC_SIZE(2);
 XMLPUBFUN void * XMLCALL
 	xmlMallocAtomicLoc (size_t size, const char *file, int line) LIBXML_ATTR_ALLOC_SIZE(1);
 XMLPUBFUN char * XMLCALL
