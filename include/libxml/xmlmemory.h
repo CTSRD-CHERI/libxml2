@@ -74,7 +74,7 @@ typedef void *(LIBXML_ATTR_ALLOC_SIZE(1) XMLCALL *xmlMallocFunc)(size_t size);
  *
  * Returns a pointer to the newly reallocated block or NULL in case of error.
  */
-typedef void *(XMLCALL *xmlReallocFunc)(void *mem, size_t size);
+typedef void *(LIBXML_ATTR_ALLOC_SIZE(2) XMLCALL *xmlReallocFunc)(void *mem, size_t size);
 
 /**
  * xmlStrdupFunc:
