@@ -2,7 +2,7 @@
       * Description: internal interfaces for the XML Schemas handling
       *              and schema validity checking
       *              The Schemas development is a Work In Progress.
-      *              Some of those interfaces are not garanteed to be API or
+      *              Some of those interfaces are not guaranteed to be API or
       *                ABI stable !
       *
       * Copy: See Copyright for the status of this software.
@@ -429,14 +429,14 @@
 
       * XML_SCHEMAS_ATTRGROUP_WILDCARD_BUILDED:
       *
-      * The attribute wildcard has been already builded.
+      * The attribute wildcard has been already built.
 
      d XML_SCHEMAS_ATTRGROUP_WILDCARD_BUILDED...
      d                 c                   X'0001'
 
       * XML_SCHEMAS_ATTRGROUP_GLOBAL:
       *
-      * The attribute wildcard has been already builded.
+      * The attribute wildcard has been already built.
 
      d XML_SCHEMAS_ATTRGROUP_GLOBAL...
      d                 c                   X'0002'
@@ -885,7 +885,7 @@
 
       * XML_SCHEMAS_ELEM_BLOCK_SUBSTITUTION:
       *
-      * disallowed substitutions: "substituion"
+      * disallowed substitutions: "substitution"
 
      d XML_SCHEMAS_ELEM_BLOCK_SUBSTITUTION...
      d                 c                   X'00002000'

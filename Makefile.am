@@ -2,18 +2,18 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = include . doc example xstc $(PYTHON_SUBDIR)
+SUBDIRS = include . doc example fuzz xstc $(PYTHON_SUBDIR)
 
-DIST_SUBDIRS = include . doc example python xstc
+DIST_SUBDIRS = include . doc example fuzz python xstc
 
 AM_CPPFLAGS = -I$(top_builddir)/include -I$(srcdir)/include
 
-AM_CFLAGS = $(THREAD_CFLAGS) $(Z_CFLAGS) $(LZMA_CFLAGS)
+AM_CFLAGS = $(EXTRA_CFLAGS) $(THREAD_CFLAGS) $(Z_CFLAGS) $(LZMA_CFLAGS)
 
-noinst_PROGRAMS=testSchemas testRelax testSAX testHTML testXPath testURI \
-                testThreads testC14N testAutomata testRegexp \
-                testReader testapi testModule runtest runsuite testchar \
-		testdict runxmlconf testrecurse testlimits
+check_PROGRAMS=testSchemas testRelax testSAX testHTML testXPath testURI \
+               testThreads testC14N testAutomata testRegexp \
+               testReader testapi testModule runtest runsuite testchar \
+	       testdict runxmlconf testrecurse testlimits
 
 bin_PROGRAMS = xmllint xmlcatalog
 
@@ -126,11 +126,7 @@ testC14N_LDFLAGS =
 testC14N_DEPENDENCIES = $(DEPS)
 testC14N_LDADD= $(LDADDS)
 
-if THREADS_W32
-testThreads_SOURCES = testThreadsWin32.c
-else
 testThreads_SOURCES = testThreads.c
-endif
 testThreads_LDFLAGS = 
 testThreads_DEPENDENCIES = $(DEPS)
 testThreads_LDADD= $(BASE_THREAD_LIBS) $(LDADDS)
@@ -202,7 +198,8 @@ runxmlconf_LDADD= $(LDADDS)
 #testOOM_DEPENDENCIES = $(DEPS)
 #testOOM_LDADD= $(LDADDS)
 
-runtests:
+runtests: runtest$(EXEEXT) testrecurse$(EXEEXT) testapi$(EXEEXT) \
+          testchar$(EXEEXT) testdict$(EXEEXT) runxmlconf$(EXEEXT)
 	[ -d test   ] || $(LN_S) $(srcdir)/test   .
 	[ -d result ] || $(LN_S) $(srcdir)/result .
 	$(CHECKER) ./runtest$(EXEEXT) && \
@@ -213,6 +210,7 @@ runtests:
 	    $(CHECKER) ./runxmlconf$(EXEEXT)
 	@(if [ "$(PYTHON_SUBDIR)" != "" ] ; then cd python ; \
 	    $(MAKE) tests ; fi)
+	@cd fuzz; $(MAKE) tests
 
 check: all runtests
 
@@ -229,8 +227,8 @@ testall : tests SVGtests SAXtests
 
 tests: XMLtests XMLenttests NStests IDtests Errtests APItests $(READER_TEST) $(TEST_SAX) $(TEST_PUSH) $(TEST_HTML) $(TEST_PHTML) $(TEST_VALID) URItests $(TEST_PATTERN) $(TEST_XPATH) $(TEST_XPTR) $(TEST_XINCLUDE) $(TEST_C14N) $(TEST_DEBUG) $(TEST_CATALOG) $(TEST_REGEXPS) $(TEST_SCHEMAS) $(TEST_SCHEMATRON) $(TEST_THREADS) Timingtests $(TEST_VTIME) $(PYTHON_TESTS) $(TEST_MODULES)
 	@(if [ "$(PYTHON_SUBDIR)" != "" ] ; then cd python ; \
-	    $(MAKE) tests ; fi)
-	@(cd doc/examples ; $(MAKE) tests)
+	    $(MAKE) -s tests ; fi)
+	@(cd doc/examples ; $(MAKE) -s tests)
 
 APItests: testapi$(EXEEXT)
 	@echo "## Running the API regression tests this may take a little while"
@@ -528,10 +526,10 @@ XPathtests : testXPath$(EXEEXT)
 	  if [ ! -d $$i ] ; then \
 	  if [ ! -f $(srcdir)/result/XPath/expr/$$name ] ; then \
 	      echo New test file $$name ; \
-	      $(CHECKER) $(top_builddir)/testXPath -f --expr $$i > $(srcdir)/result/XPath/expr/$$name ; \
+	      $(CHECKER) $(top_builddir)/testXPath -f --expr $$i > $(srcdir)/result/XPath/expr/$$name 2> /dev/null ; \
 	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
 	  else \
-	      log=`$(CHECKER) $(top_builddir)/testXPath -f --expr $$i 2>&1 > result.$$name ; \
+	      log=`$(CHECKER) $(top_builddir)/testXPath -f --expr $$i > result.$$name 2> /dev/null ; \
 	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
 	      diff $(srcdir)/result/XPath/expr/$$name result.$$name` ; \
 	      if [ -n "$$log" ] ; then echo $$name result ; echo "$$log" ; fi ; \
@@ -549,7 +547,7 @@ XPathtests : testXPath$(EXEEXT)
 	      $(CHECKER) $(top_builddir)/testXPath -f -i $$i $$j > $(srcdir)/result/XPath/tests/$$name ; \
 	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
 	  else \
-	      log=`$(CHECKER) $(top_builddir)/testXPath -f -i $$i $$j 2>&1 > result.$$name ; \
+	      log=`$(CHECKER) $(top_builddir)/testXPath -f -i $$i $$j > result.$$name ; \
 	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
 	      diff $(srcdir)/result/XPath/tests/$$name result.$$name` ; \
 	      if [ -n "$$log" ] ; then echo $$name result ; echo "$$log" ; fi ; \
@@ -570,10 +568,10 @@ XPtrtests : testXPath$(EXEEXT)
 	  if [ ! -d $$j ] ; then \
 	  if [ ! -f $(srcdir)/result/XPath/xptr/$$name ] ; then \
 	      echo New test file $$name ; \
-	      $(CHECKER) $(top_builddir)/testXPath -xptr -f -i $$i $$j > $(srcdir)/result/XPath/xptr/$$name ; \
+	      $(CHECKER) $(top_builddir)/testXPath -xptr -f -i $$i $$j > $(srcdir)/result/XPath/xptr/$$name 2> /dev/null ; \
 	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0"; \
 	  else \
-	      log=`$(CHECKER) $(top_builddir)/testXPath -xptr -f -i $$i $$j 2>&1 > result.$$name ; \
+	      log=`$(CHECKER) $(top_builddir)/testXPath -xptr -f -i $$i $$j > result.$$name 2> /dev/null ; \
 	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
 	      diff $(srcdir)/result/XPath/xptr/$$name result.$$name` ; \
 	      if [ -n "$$log" ] ; then echo $$name result ; echo "$$log" ; fi ; \
@@ -843,6 +841,21 @@ SAXtests : testSAX$(EXEEXT)
 	      if [ -n "$$log" ] ; then echo $$name result ; echo "$$log" ; fi ; \
 	      rm result.$$name ; \
 	  fi ; fi ; done)
+	@echo "## SAX2 callbacks regression tests with entity substitution"
+	-@(for i in $(srcdir)/test/* ; do \
+	  name=`basename $$i`; \
+	  if [ ! -d $$i ] ; then \
+	  if [ ! -f $(srcdir)/result/noent/$$name.sax2 ] ; then \
+	      echo New test file $$name ; \
+	      $(CHECKER) $(top_builddir)/testSAX --sax2 --noent $$i > $(srcdir)/result/noent/$$name.sax2 2> /dev/null ; \
+	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
+	  else \
+	      log=`$(CHECKER) $(top_builddir)/testSAX --sax2 --noent $$i > result.$$name 2> /dev/null ; \
+	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
+	      diff $(srcdir)/result/noent/$$name.sax2 result.$$name` ; \
+	      if [ -n "$$log" ] ; then echo $$name result ; echo "$$log" ; fi ; \
+	      rm result.$$name ; \
+	  fi ; fi ; done)
 
 Validtests : xmllint$(EXEEXT)
 	@(echo > .memdump)
@@ -894,16 +907,21 @@ Regexptests: testRegexp$(EXEEXT)
 	  if [ ! -d $$i ] ; then \
 	  if [ ! -f $(srcdir)/result/regexp/$$name ] ; then \
 	      echo New test file $$name ; \
-	      $(CHECKER) $(top_builddir)/testRegexp -i $$i > $(srcdir)/result/regexp/$$name; \
+	      $(CHECKER) $(top_builddir)/testRegexp -i $$i > $(srcdir)/result/regexp/$$name 2> $(srcdir)/result/regexp/$$name.err ; \
+	      if [ ! -s "$(srcdir)/result/regexp/$$name.err" ] ; then rm $(srcdir)/result/regexp/$$name.err; fi ; \
 	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
 	  else \
-	      log=`$(CHECKER) $(top_builddir)/testRegexp -i $$i 2>&1 > result.$$name ; \
+	      log=`$(CHECKER) $(top_builddir)/testRegexp -i $$i > result.$$name 2> error.$$name ; \
 	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
-	      diff $(srcdir)/result/regexp/$$name result.$$name` ; \
-	      if [ -n "$$log" ] ; then echo $$name result ; echo "$$log" ; fi ; \
-	      rm result.$$name ; \
+	      diff $(srcdir)/result/regexp/$$name result.$$name ; \
+	      if [ -s "$(srcdir)/result/regexp/$$name.err" -o -s "error.$$name" ] ; then diff $(srcdir)/result/regexp/$$name.err error.$$name ; fi` ; \
+	      if [ -n "$$log" ] ; then echo $$name result ; echo $$log ; fi ; \
+	      rm result.$$name error.$$name ; \
 	  fi ; fi ; done)
-	@echo "## Formal expresssions regression tests"
+
+# Disabled for now
+Exptests: testRegexp$(EXEEXT)
+	@echo "## Formal expressions regression tests"
 	-@(for i in $(srcdir)/test/expr/* ; do \
 	  name=`basename $$i`; \
 	  if [ ! -d $$i ] ; then \
@@ -984,7 +1002,7 @@ C14Ntests : testC14N$(EXEEXT)
 			    cmdline="$$cmdline '`cat $(srcdir)/test/c14n/$$m/$$name.ns`'"; \
 			fi; \
 		    fi; \
-		    $$cmdline > $(srcdir)/test/c14n/test.tmp; \
+		    $$cmdline > $(srcdir)/test/c14n/test.tmp 2> /dev/null; \
 		    if [ $$? -eq 0 ]; then \
 			diff  $(srcdir)/result/c14n/$$m/$$name $(srcdir)/test/c14n/test.tmp; \
 			if [ $$? -ne 0 ]; then \
@@ -1219,6 +1237,7 @@ xml2Conf.sh: xml2Conf.sh.in Makefile
 	    -e 's?\@XML_INCLUDEDIR\@?$(XML_INCLUDEDIR)?g' \
 	    -e 's?\@VERSION\@?$(VERSION)?g' \
 	    -e 's?\@XML_LIBS\@?$(XML_LIBS)?g' \
+	    -e 's?\@XML_PRIVATE_LIBS\@?$(XML_PRIVATE_LIBS)?g' \
 	       < $(srcdir)/xml2Conf.sh.in > xml2Conf.tmp \
 	&& mv xml2Conf.tmp xml2Conf.sh
 
@@ -1237,9 +1256,11 @@ EXTRA_DIST = xml2-config.in xml2Conf.sh.in libxml.spec.in libxml2.spec \
 	     libxml2-config.cmake.in autogen.sh \
 	     trionan.c trionan.h triostr.c triostr.h trio.c trio.h \
 	     triop.h triodef.h libxml.h elfgcchack.h xzlib.h buf.h \
-	     enc.h save.h testThreadsWin32.c genUnicode.py TODO_SCHEMAS \
+	     enc.h save.h genUnicode.py TODO_SCHEMAS \
 	     dbgen.pl dbgenattr.pl regressions.py regressions.xml \
 	     README.tests Makefile.tests libxml2.syms timsort.h \
+	     README.zOS \
+	     CMakeLists.txt config.h.cmake.in libxml2-config.cmake.cmake.in \
 	     $(CVS_EXTRA_DIST)
 
 
