@@ -709,7 +709,12 @@ set(XML_PRIVATE_LIBS "${Z_LIBS} ${LZMA_LIBS} ${THREAD_LIBS} ${ICONV_LIBS} ${ICU_
 file(RELATIVE_PATH PACKAGE_RELATIVE_PATH "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" "${CMAKE_INSTALL_PREFIX}")
 string(REGEX REPLACE "/$" "" PACKAGE_RELATIVE_PATH "${PACKAGE_RELATIVE_PATH}")
 
-set(prefix "\${pcfiledir}/${PACKAGE_RELATIVE_PATH}")
+# Work around https://gitlab.freedesktop.org/pkg-config/pkg-config/-/issues/52
+if (FALSE)
+    set(prefix "\${pcfiledir}/${PACKAGE_RELATIVE_PATH}")
+else()
+    set(prefix "${CMAKE_INSTALL_PREFIX}")
+endif()
 set(exec_prefix "\${prefix}")
 set(libdir "\${prefix}/${CMAKE_INSTALL_LIBDIR}")
 set(includedir "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
