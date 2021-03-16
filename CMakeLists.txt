@@ -53,6 +53,11 @@ option(LIBXML2_WITH_XPTR "Add the XPointer support" ON)
 option(LIBXML2_WITH_ZLIB "Use libz" ON)
 set(LIBXML2_XMLCONF_WORKING_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "Working directory for XML Conformance Test Suite")
 
+if(NOT BUILD_SHARED_LIBS)
+    # Prefer .a over .so (workaround for https://gitlab.kitware.com/cmake/cmake/-/issues/21942)
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ".a" ".so")
+endif()
+
 if(LIBXML2_WITH_ICONV)
 	find_package(Iconv REQUIRED)
 endif()
