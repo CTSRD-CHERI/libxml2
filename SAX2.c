@@ -13,6 +13,7 @@
 #include <string.h>
 #include <limits.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <libxml/xmlmemory.h>
 #include <libxml/tree.h>
 #include <libxml/parser.h>

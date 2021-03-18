@@ -21,6 +21,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
 #include <libxml/parserInternals.h>
