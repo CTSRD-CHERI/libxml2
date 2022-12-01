@@ -63,12 +63,7 @@ typedef void (XMLCALL *xmlFreeFunc)(void *mem);
  *
  * Returns a pointer to the newly allocated block or NULL in case of error.
  */
-#if defined(__clang__) && __has_feature(capabilities)
-/* Only CHERI clang allows the alloc_size attribute on function pointers */
 typedef void *(LIBXML_ATTR_ALLOC_SIZE(1) XMLCALL *xmlMallocFunc)(size_t size);
-#else
-typedef void *(XMLCALL *xmlMallocFunc)(size_t size);
-#endif
 
 /**
  * xmlReallocFunc:
@@ -79,12 +74,7 @@ typedef void *(XMLCALL *xmlMallocFunc)(size_t size);
  *
  * Returns a pointer to the newly reallocated block or NULL in case of error.
  */
-#if defined(__clang__) && __has_feature(capabilities)
-/* Only CHERI clang allows the alloc_size attribute on function pointers */
-typedef void *(LIBXML_ATTR_ALLOC_SIZE(2) XMLCALL *xmlReallocFunc)(void *mem, size_t size);
-#else
 typedef void *(XMLCALL *xmlReallocFunc)(void *mem, size_t size);
-#endif
 
 /**
  * xmlStrdupFunc:
