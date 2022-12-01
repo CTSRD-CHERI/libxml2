@@ -74,7 +74,7 @@ typedef xmlEntity *xmlEntityPtr;
 typedef enum {
     XML_BUFFER_ALLOC_DOUBLEIT,	/* double each time one need to grow */
     XML_BUFFER_ALLOC_EXACT,	/* grow only to the minimal size */
-    XML_BUFFER_ALLOC_IMMUTABLE, /* immutable buffer */
+    XML_BUFFER_ALLOC_IMMUTABLE, /* immutable buffer, deprecated */
     XML_BUFFER_ALLOC_IO,	/* special allocation scheme used for I/O */
     XML_BUFFER_ALLOC_HYBRID,	/* exact up to a threshold, and doubleit thereafter */
     XML_BUFFER_ALLOC_BOUNDED	/* limit the upper size of the buffer */
@@ -177,11 +177,13 @@ typedef enum {
     XML_NAMESPACE_DECL=		18,
     XML_XINCLUDE_START=		19,
     XML_XINCLUDE_END=		20
-#ifdef LIBXML_DOCB_ENABLED
-   ,XML_DOCB_DOCUMENT_NODE=	21
-#endif
+    /* XML_DOCB_DOCUMENT_NODE=	21 */ /* removed */
 } xmlElementType;
 
+/** DOC_DISABLE */
+/* For backward compatibility */
+#define XML_DOCB_DOCUMENT_NODE 21
+/** DOC_ENABLE */
 
 /**
  * xmlNotation:
@@ -659,7 +661,7 @@ struct _xmlDOMWrapCtxt {
     defined(LIBXML_SCHEMAS_ENABLED) || defined(LIBXML_DEBUG_ENABLED) || \
     defined (LIBXML_HTML_ENABLED) || defined(LIBXML_SAX1_ENABLED) || \
     defined(LIBXML_HTML_ENABLED) || defined(LIBXML_WRITER_ENABLED) || \
-    defined(LIBXML_DOCB_ENABLED) || defined(LIBXML_LEGACY_ENABLED)
+    defined(LIBXML_LEGACY_ENABLED)
 XMLPUBFUN int XMLCALL
 		xmlValidateNCName	(const xmlChar *value,
 					 int space);
@@ -763,6 +765,7 @@ XMLPUBFUN xmlDtdPtr XMLCALL
 XMLPUBFUN void XMLCALL
 		xmlFreeDtd		(xmlDtdPtr cur);
 #ifdef LIBXML_LEGACY_ENABLED
+XML_DEPRECATED
 XMLPUBFUN xmlNsPtr XMLCALL
 		xmlNewGlobalNs		(xmlDocPtr doc,
 					 const xmlChar *href,
