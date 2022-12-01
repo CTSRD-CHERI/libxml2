@@ -31,6 +31,7 @@
 #endif
 
 #include "private/error.h"
+#include "private/parser.h"
 
 #define DUMP_TEXT_TYPE 1
 
@@ -2636,6 +2637,7 @@ xmlShellValidate(xmlShellCtxtPtr ctxt, char *dtd,
 
     if ((ctxt == NULL) || (ctxt->doc == NULL)) return(-1);
     vctxt.userData = NULL;
+    vctxt.flags &= ~XML_VCTXT_USE_PCTXT;
     vctxt.error = xmlGenericError;
     vctxt.warning = xmlGenericError;
 
