@@ -2636,8 +2636,7 @@ xmlShellValidate(xmlShellCtxtPtr ctxt, char *dtd,
     int res = -1;
 
     if ((ctxt == NULL) || (ctxt->doc == NULL)) return(-1);
-    vctxt.userData = NULL;
-    vctxt.flags &= ~XML_VCTXT_USE_PCTXT;
+    memset(&vctxt, 0, sizeof(vctxt));
     vctxt.error = xmlGenericError;
     vctxt.warning = xmlGenericError;
 
